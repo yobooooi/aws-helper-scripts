@@ -31,10 +31,10 @@ def get_details_from_Snapshot(Snapshot):
     return instance_id, date
 
 if __name__ == '__main__':
-    print("InsanceID, AMI, DateTaken")
+    print("InsanceID, AMI, DateTaken, SnapshotID")
     os.environ['AWS_SHARED_CREDENTIALS_FILE'] = '~/.aws/credentials'
 
-    session = boto3.Session(profile_name='profile') #profile of the adminstrator account details
+    session = boto3.Session(profile_name='pnp') #profile of the adminstrator account details
     aws_regions = [ 'eu-west-1' ]
     
     for region_name in aws_regions:
@@ -53,7 +53,7 @@ if __name__ == '__main__':
             snapshot_details = ec2_client.describe_snapshots(SnapshotIds=[root_snapshot_id])
             instace_id, date = get_details_from_Snapshot(snapshot_details['Snapshots'][0])
             
-            print("{0}, {1}, {2}".format(instace_id, image_id, date))
+            print("{0}, {1}, {2}, {3}".format(instace_id, image_id, date, root_snapshot_id))
             
 
 
