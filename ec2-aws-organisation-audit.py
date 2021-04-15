@@ -11,7 +11,7 @@ import json
 #
 # An easy means to audit the EC2 resources in an AWS Organiztion
 #
-profile = 'master'
+profile = 'pnp'
 region =  'eu-west-1'
 
 if __name__ == '__main__':
