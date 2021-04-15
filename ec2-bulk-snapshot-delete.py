@@ -9,10 +9,16 @@ from datetime import datetime
 # Author: Adan Patience
 # Date: 27 November 2020
 # Description:
-# Bulk restore snapshots with details in a CSV format
+# Bulk delete snapshots from a text file
 #
-# Restore root snpashot volumes from a CSV with the format:
-# i-0d98518a6250bc51d,snap-0716b0845d19d05ee,host_name
+# bulk delete snpashots from a text file with the following format:
+# snap-0716b0845d19d05ee
+# snap-047f5363d3833d567
+# snap-0346a160faa4c144c
+# snap-01c862d85afdc67c4
+# snap-03ce6301ab3d41ca0
+# snap-0ec89a8ad4fa028e4
+# snap-0624628f3f4afbdc0
 #
 file_name = 'snapshots-to-delete.txt'
 date = datetime.now()
