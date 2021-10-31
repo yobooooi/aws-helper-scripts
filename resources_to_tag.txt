@@ -1,4 +1,0 @@
-arn:aws:codecommit:eu-west-1:296274010522:ami-builder
-arn:aws:codecommit:eu-west-1:296274010522:pnp-ami-source
-arn:aws:s3:::ami-builder-artefacts
-arn:aws:ec2:eu-west-1:296274010522:instance/i-01116fb08efbefe6f
