@@ -17,9 +17,9 @@ from rich.progress import track
 # Account ID, UserId, UserName, AccessKeyId, LastUsedDate
 #
 #
-master_account_id = "010103128381"
+master_account_id = ''
 
-profile = 'pattern_root'
+profile = ''
 region  =  'eu-west-1'
 
 os.environ['AWS_SHARED_CREDENTIALS_FILE'] = '~/.aws/credentials'
