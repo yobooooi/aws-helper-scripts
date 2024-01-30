@@ -1,0 +1,155 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Pod","metadata":{"annotations":{},"labels":{"app":"fastapi"},"name":"python-pod","namespace":"devcontainer"},"spec":{"containers":[{"command":["/bin/sh","-c","while sleep 1000; do :; done"],"image":"mcr-focal-fixed","imagePullPolicy":"Never","name":"python-container","securityContext":{"runAsGroup":1000,"runAsUser":1000},"volumeMounts":[{"mountPath":"/workspace","name":"code-volume"},{"mountPath":"/home/vscode/.cache","name":"cache-volume"}]},{"env":[{"name":"POSTGRES_PASSWORD","value":"blehbleh"}],"image":"postgres:latest","name":"postgres","ports":[{"containerPort":5432}],"volumeMounts":[{"mountPath":"/var/lib/postgresql/data","name":"postgres-volume"}]}],"volumes":[{"hostPath":{"path":"/Users/adan/Work/me/aws-helper-scripts","type":"Directory"},"name":"code-volume"},{"emptyDir":{},"name":"cache-volume"},{"name":"postgres-volume","persistentVolumeClaim":{"claimName":"local-path-pvc"}}]}}
+  creationTimestamp: "2022-10-03T13:27:00Z"
+  labels:
+    app: fastapi
+  name: python-pod
+  namespace: devcontainer
+  resourceVersion: "8199"
+  uid: 27a59553-bea7-452d-bef8-e09bc4c7e8dd
+spec:
+  containers:
+  - command:
+    - /bin/sh
+    - -c
+    - while sleep 1000; do :; done
+    image: mcr-focal-fixed
+    imagePullPolicy: IfNotPresent
+    name: python-container
+    resources: {}
+    securityContext:
+      runAsGroup: 1000
+      runAsUser: 1000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /workspace
+      name: code-volume
+    - mountPath: /home/vscode/.cache
+      name: cache-volume
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-5hcfn
+      readOnly: true
+  - env:
+    - name: POSTGRES_PASSWORD
+      value: blehbleh
+    image: postgres:latest
+    imagePullPolicy: Always
+    name: postgres
+    ports:
+    - containerPort: 5432
+      protocol: TCP
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/lib/postgresql/data
+      name: postgres-volume
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-5hcfn
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: lima-rancher-desktop
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - hostPath:
+      path: /Users/adan/Work/me/aws-helper-scripts
+      type: Directory
+    name: code-volume
+  - emptyDir: {}
+    name: cache-volume
+  - name: postgres-volume
+    persistentVolumeClaim:
+      claimName: local-path-pvc
+  - name: kube-api-access-5hcfn
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-10-03T13:27:13Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-10-03T13:27:13Z"
+    message: 'containers with unready status: [python-container]'
+    reason: ContainersNotReady
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-10-03T13:27:13Z"
+    message: 'containers with unready status: [python-container]'
+    reason: ContainersNotReady
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-10-03T13:27:13Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: containerd://11ca7d17293cec0fe7712565a870678485424361307177443239214d61197273
+    image: docker.io/library/postgres:latest
+    imageID: docker.io/library/postgres@sha256:b0ee049a2e347f5ec8c64ad225c7edbc88510a9e34450f23c4079a489ce16268
+    lastState: {}
+    name: postgres
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-10-03T13:27:44Z"
+  - image: mcr-focal-fixed
+    imageID: ""
+    lastState: {}
+    name: python-container
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      waiting:
+        message: Container image "mcr-focal-fixed" is not present with pull policy
+          of Never
+        reason: ErrImageNeverPull
+  hostIP: 192.168.5.15
+  phase: Pending
+  podIP: 10.42.0.11
+  podIPs:
+  - ip: 10.42.0.11
+  qosClass: BestEffort
+  startTime: "2022-10-03T13:27:13Z"

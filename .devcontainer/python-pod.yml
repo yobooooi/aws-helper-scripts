@@ -1,0 +1,97 @@
+# python-pod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: python-pod
+  labels:
+    app: fastapi
+spec:
+  containers:
+
+  - image: mcr.microsoft.com/vscode/devcontainers/python:3-bullseye
+    # https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
+    imagePullPolicy: IfNotPresent
+    name: python
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      #fsGroup: 2000
+    command: ["/bin/sh", "-c", "while sleep 1000; do :; done"]
+    volumeMounts:
+    - mountPath: /workspace
+      name: code-volume
+    - mountPath: /home/vscode/.cache
+      name: cache-volume
+
+  - name: postgres
+    # https://hub.docker.com/_/postgres/
+    image: postgres:latest
+    ports:
+      - containerPort: 5432
+    env:
+    - name: POSTGRES_PASSWORD
+      value: "blehbleh"
+    volumeMounts:
+      - mountPath: /var/lib/postgresql/data
+        name: postgres-volume
+
+  volumes:
+  - name: code-volume
+    hostPath: 
+
+      # location of your code on the host; on Linux this is the actual directory:
+      #path: /home/cpbotha/Dropbox/work/code/sandbox/dbwriter_comparison/dbwriter_python
+
+      # On Windows with docker for desktop, it's MOAR COMPLICATED:
+      # - bind mount on the WSL2 image:
+      #    sudo mount --bind /bleh/bleh/dbwriter_python /mnt/wsl/dbwriter_python
+      # - this maps to:
+      #   /run/desktop/mnt/host/wsl/... for docker and kubernetes
+      #   see https://github.com/docker/for-win/issues/5325#issuecomment-567594291
+      #   (on docker-desktop wsl2 image, I can only see it as /mnt/host/wsl/... )
+      path: /Users/adan/Work/me/aws-helper-scripts
+
+      # this field is optional
+      type: Directory
+  - name: cache-volume
+    # same as lifetime of the pod; OK for caching of python package installs and so on
+    # https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
+    emptyDir: {}
+  - name: postgres-volume
+    persistentVolumeClaim:
+      claimName: local-path-pvc
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-path-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  # this looks like it could be rancher-specific!
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  type: NodePort
+  selector:
+    app: fastapi
+  ports:
+    - protocol: TCP
+      # cluster applications can come in via this port
+      # also, this is the localhost port I can hit with rancher running locally
+      port: 8000
+      # traffic will be forwarded to pods with label "fastapi" on this port
+      targetPort: 8000
+      # connect to this port on the machine hosting the cluster node
+      nodePort: 30080

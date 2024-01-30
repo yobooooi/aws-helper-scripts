@@ -1,0 +1,65 @@
+---
+Remediations:
+  ManagedRules:
+    - rule_name: approved-amis-by-id
+      rule_identifier: APPROVED_AMIS_BY_ID
+      global_policy_id: APPROVED_AMIS_BY_ID
+      policy_type: MANAGED_CONFIG
+      alert_non_compliance: True
+      non_compliance_remediatable: True
+      remediator_type: SSM
+      remediator_policy_arn: AWS-StopEC2Instance
+      iam_role_name: LCR-SSM-IAM-PassRole
+      parameters:
+        finding_parameters:
+          amiIds:
+            - %(amiIds)
+        document_version: $LATEST
+        runbook_parameters:
+          InstanceId:
+            - $resource_id$
+          AutomationAssumeRole: 
+            - arn:aws:iam::$account_id$:role/LCR-RemediatorRole
+    - rule_name: s3-bucket-logging-enabled
+      rule_identifier: S3_BUCKET_LOGGING_ENABLED
+      global_policy_id: S3_BUCKET_LOGGING_ENABLED
+      policy_type: MANAGED_CONFIG
+      alert_non_compliance: True
+      non_compliance_remediatable: True
+      remediator_type: SSM
+      remediator_policy_arn: AWS-ConfigureS3BucketLogging
+      iam_role_name: LCR-RemediatorRole
+      parameters:
+        document_version: $LATEST
+        runbook_parameters:
+          BucketName:
+            - $resource_id$
+          GrantedPermission:
+            - FULL_CONTROL
+          GranteeType:
+            - CanonicalUser
+          TargetBucket:
+            - %(CentralLoggingTargetBucket)-%(CentralAccount)
+          TargetPrefix:
+            - accesslogs-$resource_id$
+    - rule_name: iam-user-unused-credentials-check
+      rule_identifier: IAM_USER_UNUSED_CREDENTIALS_CHECK
+      global_policy_id: IAM_USER_UNUSED_CREDENTIALS_CHECK
+      policy_type: MANAGED_CONFIG
+      alert_non_compliance: True
+      non_compliance_remediatable: True
+      remediator_type: SSM
+      remediator_policy_arn: AWSConfigRemediation-RevokeUnusedIAMUserCredentials
+      iam_role_name: LCR-SSM-IAM-PassRole
+      parameters:
+        finding_parameters:
+          maxCredentialUsageAge:
+            - %(maxCredentialUsageAge)
+        document_version: $LATEST
+        runbook_parameters:
+          IAMResourceId:
+            - $resource_id$
+          AutomationAssumeRole: 
+            - arn:aws:iam::$account_id$:role/LCR-RemediatorRole
+          MaxCredentialUsageAge:
+            - %(MaxCredentialUsageAge)

@@ -17,11 +17,11 @@ from rich.progress import track
 # Check inactive security groups
 #
 #
-profile = 'clickcart_dev'
-region  =  'eu-west-1'
+# profile = 'clickcart_dev'
+region  =  'us-east-1'
 
-os.environ['AWS_SHARED_CREDENTIALS_FILE'] = '~/.aws/credentials'
-session = boto3.Session(profile_name=profile, region_name=region) #profile of the adminstrator account details
+# os.environ['AWS_SHARED_CREDENTIALS_FILE'] = '~/.aws/credentials'
+session = boto3.Session() #profile of the adminstrator account details
 
 console = Console()
 
@@ -31,10 +31,10 @@ table.add_column("Security Group ID", style="dim")
 table.add_column("Description", style="dim")
 table.add_column("Network Interface", style="dim")
 
-account_id = 'N/A'
+account_id = '828605012785'
 
 if __name__ == '__main__':
-  ec2 = session.client('ec2')
+  ec2 = session.client('ec2', region_name=region)
 
   ec2_paginator = ec2.get_paginator('describe_security_groups')
   ec2_iterator  = ec2_paginator.paginate()
@@ -55,14 +55,14 @@ if __name__ == '__main__':
           table.add_row(
             "[red]{0}[red]".format(account_id),
             "{0}".format(security_group_id),
-            "[yellow]{0}[/yellow]".format(interface['Description']),
+            "[yellow]{0}[/yellow]".format("COMPLIANT"),
             "{0}".format(interface['NetworkInterfaceId']),
           )
       else:
         table.add_row(
           "[red]{0}[red]".format(account_id),
           "{0}".format(security_group_id),
-          "[yellow]{0}[/yellow]".format('N/A'),
+          "[yellow]{0}[/yellow]".format('NON_COMPLIANT'),
           "{0}".format('N/A'),
           )
   console.print(table)
